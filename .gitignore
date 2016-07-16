@@ -1,0 +1,9 @@
+*~
+*.pyc
+*.pyd
+*.dll
+/\.
+.*
+!.gitignore
+
+Leap.py
