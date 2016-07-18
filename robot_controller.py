@@ -240,7 +240,6 @@ if __name__ == '__main__':
 
         input_angles = robot_controller.update(robot_system.get_angles_rad(), target_pos).input_angles_rad
         robot_system.input_angles(input_angles)
-        robot_system.input_angles(input_angles)
 
         robot_visualizer.add_point(target_pos[0, 0],
                                    target_pos[1, 0],
