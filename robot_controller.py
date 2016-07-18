@@ -34,7 +34,8 @@ class Robot:
             self._joints_pos[idx + 1] = np.copy(trans[0:3, 3:4])
         return self
 
-    def get_angles_rad(self):
+    @property
+    def angles_rad(self):
         return self._angles_rad
 
     @property
@@ -229,7 +230,7 @@ if __name__ == '__main__':
     robot_system = Robot(init_angs_rad)
 
     leap_mgr = LeapManager(np.matrix([0, -100, 0]).T)
-    robot_controller = RobotController(robot_system.get_angles_rad())
+    robot_controller = RobotController(robot_system.angles_rad)
     robot_visualizer = Visualizer()
 
     target_pos = robot_system.joint_pos[-1]
@@ -238,7 +239,7 @@ if __name__ == '__main__':
         if leap_mgr.update():
             target_pos = leap_mgr.palms[0]
 
-        input_angles = robot_controller.update(robot_system.get_angles_rad(), target_pos).input_angles_rad
+        input_angles = robot_controller.update(robot_system.angles_rad, target_pos).input_angles_rad
         robot_system.input_angles(input_angles)
 
         robot_visualizer.add_point(target_pos[0, 0],
