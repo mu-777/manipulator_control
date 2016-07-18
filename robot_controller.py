@@ -28,7 +28,7 @@ class Robot:
 
         input_angs_rad = np.append(input_angs_rad, np.matrix([[0]]), axis=0)
         trans = np.matrix(np.identity(4))
-        for idx, (t, ang) in enumerate(zip([self._t0to1, self._t1to2, self._t2to3, self._t3to4, self._t4toEE],
+        for idx, (t, ang) in enumerate(zip([self._t0to1, self._t1to2, self._t2to3, self._t3to4, self._t4toTip],
                                            input_angs_rad)):
             trans *= t(ang[0, 0])
             self._joints_pos[idx + 1] = np.copy(trans[0:3, 3:4])
@@ -57,7 +57,7 @@ class Robot:
         s, c, l, th = np.sin, np.cos, LINK_LENGTHES_MM, ang
         return np.matrix([[c(th), -s(th), 0, l[3]], [0, 0, 1, 0], [-s(th), -c(th), 0, 0], [0, 0, 0, 1]])
 
-    def _t4toEE(self, ang):
+    def _t4toTip(self, ang):
         s, c, l, th = np.sin, np.cos, LINK_LENGTHES_MM, ang
         return np.matrix([[1, 0, 0, l[4]], [0, 1, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]])
 
@@ -161,12 +161,6 @@ class Visualizer:
     def __init__(self, fig_num=1):
         self._fig = plt.figure(fig_num)
         self._ax = Axes3D(self._fig)
-        self._ax.set_xlim(left=-sum(LINK_LENGTHES_MM) / 2,
-                          right=sum(LINK_LENGTHES_MM) / 2)
-        self._ax.set_ylim(bottom=-sum(LINK_LENGTHES_MM) / 2,
-                          top=sum(LINK_LENGTHES_MM) / 2)
-        self._ax.set_zlim(bottom=0,
-                          top=sum(LINK_LENGTHES_MM))
 
     def _set_drawing_params(self):
         self._ax.set_xlim(left=-sum(LINK_LENGTHES_MM) / 2,
@@ -234,23 +228,23 @@ if __name__ == '__main__':
 
     robot_system = Robot(init_angs_rad)
 
-    leap = LeapManager(np.matrix([0, -100, 0]).T)
+    leap_mgr = LeapManager(np.matrix([0, -100, 0]).T)
     robot_controller = RobotController(robot_system.get_angles_rad())
     robot_visualizer = Visualizer()
 
-    ee_ref = robot_system.joint_pos[-1]
+    target_pos = robot_system.joint_pos[-1]
 
     while True:
-        if leap.update():
-            ee_ref = leap.palms[0]
+        if leap_mgr.update():
+            target_pos = leap_mgr.palms[0]
 
-        input_angles = robot_controller.update(robot_system.get_angles_rad(), ee_ref).input_angles_rad
+        input_angles = robot_controller.update(robot_system.get_angles_rad(), target_pos).input_angles_rad
         robot_system.input_angles(input_angles)
         robot_system.input_angles(input_angles)
 
-        robot_visualizer.add_point(ee_ref[0, 0],
-                                   ee_ref[1, 0],
-                                   ee_ref[2, 0]).add_robot(robot_system.joint_pos).draw()
+        robot_visualizer.add_point(target_pos[0, 0],
+                                   target_pos[1, 0],
+                                   target_pos[2, 0]).add_robot(robot_system.joint_pos).draw()
 
 
 
