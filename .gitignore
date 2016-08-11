@@ -2,8 +2,9 @@
 *.pyc
 *.pyd
 *.dll
+*.so
 /\.
 .*
 !.gitignore
-
 Leap.py
+lib/*

@@ -5,10 +5,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import lib.Leap as Leap
+from twisted.internet import reactor
 
 # units: mm, rad
 
-LINK_LENGTHES_MM = [45, 45, 45, 45, 45]
+LINK_LENGTHES_MM = [25, 45, 45, 45, 45]
 
 
 def to_vector(x, y, z):
@@ -221,6 +222,9 @@ class LeapManager:
     @staticmethod
     def _transform(trans, vec):
         return (trans * np.append(vec, np.matrix([[1]]), axis=0))[0:3, 0:1]
+
+
+
 
 
 # --------------------------------------------
